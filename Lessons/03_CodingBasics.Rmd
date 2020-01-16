@@ -36,28 +36,28 @@ vector2
 vector3 <- c(TRUE,TRUE,TRUE,FALSE,TRUE,FALSE) #logical vector
 vector3
 
-vector1[3] # 
+vector1[3] # Returns the 3rd element in vector1
 
 # Matrices ----
-matrix1 <- matrix(1:20, nrow = 5,ncol = 4) # 
+matrix1 <- matrix(1:20, nrow = 5,ncol = 4) # Creates a 5x4 matrix and counts 1-20 by column
 matrix1
-matrix2 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE) #
+matrix2 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE) #Creates a 5x4 matrix and counts 1-20 by row
 matrix2
 matrix3 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE, # return after comma continues the line
                   dimnames = list(c("uno", "dos", "tres", "cuatro", "cinco"), 
-                                  c("un", "deux", "trois", "cat"))) #
+                                  c("un", "deux", "trois", "cat"))) #Renames columns then rows
 
-matrix1[4, ] #
-matrix1[ , 3] #
-matrix1[c(12, 14)] #
-matrix1[c(12:14)] #
-matrix1[2:4, 1:3] #
+matrix1[4, ] #returns the fourth row of matrix 1
+matrix1[ , 3] #returns the third column of matrix 1
+matrix1[c(12, 14)] #returns the values within the matrix that it's calling, in this case 12 and 14
+matrix1[c(12:14)] #returns values 12 through 14, so 12, 13, and 14
+matrix1[2:4, 1:3] #returns rows 2 through 4 and columns 1 through 3
 
 cells <- c(1, 26, 24, 68)
 rnames <- c("R1", "R2")
 cnames <- c("C1", "C2") 
 matrix4 <- matrix(cells, nrow = 2, ncol = 2, byrow = TRUE,
-  dimnames = list(rnames, cnames)) # 
+  dimnames = list(rnames, cnames)) #make a matrix with the specifications defined in the variables above
 matrix4
 
 # Lists ---- 
@@ -65,48 +65,61 @@ list1 <- list(name = "Maria", mynumbers = vector1, mymatrix = matrix1, age = 5.3
 list1[[2]]
 
 # Data Frames ----
-d <- c(1, 2, 3, 4) # What type of vector?
-e <- c("red", "white", "red", NA) # What type of vector?
-f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector?
-dataframe1 <- data.frame(d,e,f) #
-names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) # 
+d <- c(1, 2, 3, 4) # What type of vector? Numeric
+e <- c("red", "white", "red", NA) # What type of vector? Character
+f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector? Logical
+dataframe1 <- data.frame(d,e,f) #Combines d, e, and f to make a data frame
+names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) #renames columns of dataframe 
 
-dataframe1[1:2,] # 
-dataframe1[c("ID","Passed")] # 
-dataframe1$ID
+dataframe1[1:2,] #calls dataframe rows 1 through 2
+dataframe1[c("ID","Passed")] #Subset just the ID and passed columns
+dataframe1$ID #print just the ID column
 
 ```
 Question: How do the different types of data appear in the Environment tab?
 
-> Answer: 
+> Answer: matrices, lists, and dataframes appear under Data and vectors appear under Values. They are all defined by the type of data, i.e. list, int, chr, logi
 
 Question: In the R chunk below, write "dataframe1$". Press `tab` after you type the dollar sign. What happens?
 
-> Answer: 
+> Answer: The columns of the dataframe will appear as options
 
 ### Coding challenge
 
 Find a ten-day forecast of temperatures (Fahrenheit) for Durham, North Carolina. Create two vectors, one representing the high temperature on each of the ten days and one representing the low.
 
 ```{r}
-
+high_temps<-c(61,44,46,50,40,39,45,52,50,48)
+low_temps<-c(37,29,28,27,20,18,15,18,17,15)
 ```
 
 Now, create two additional vectors that include the ten-day forecast for the high and low temperatures in Celsius.
 
 ```{r}
-
+celsius<-function(x){
+  degrees_c<-((x-32)*5)/9
+  return(degrees_c)
+}
+c_high<-celsius(high_temps)
+c_low<-celsius(low_temps)
 ```
 
 Combine your four vectors into a data frame and add informative column names.
 
 ```{r}
+ten_day_temps<-data.frame(high_temps,low_temps,c_high,c_low)
 
 ```
 
 Use the common functions `summary` and `sd` to obtain basic data summaries of the ten-day forecast. How would you call these functions differently for the entire data frame vs. a single column? Attempt to demonstrate both options below.
 
 ```{r}
+
+#For entire dataframe
+sapply(ten_day_temps, sd, na.rm = TRUE)
+
+#For a specific column
+sd(ten_day_temps$high_temps)
 
 ```
 
@@ -144,7 +157,7 @@ library(tidyverse)
 
 Question: What happens in the console when you load a package?
 
-> Answer: 
+> Answer: The package appears checked off in the Packages tab
 
 
 ## Tips and Tricks
