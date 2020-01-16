@@ -77,8 +77,9 @@ passing<-function(x){
   print(y)
 }
 passing(student_grades)
+
 ```
 
 12. QUESTION: Which option of `if` and `else` vs. `ifelse` worked? Why?
 
-> Answer: ifelse worked because there are two options that the answer could be, either TRUE or FALSE. So you need to give it a way to assign the answer if the condition is met with the if, and if the condition is not met with the else. So both if and else together would work, but ifelse is easier becomes it combines the two in one.
+> Answer: ifelse worked because there are two options that the answer could be, either TRUE or FALSE. So you need to give it a way to assign the answer if the condition is met with the if, and if the condition is not met with the else. So only ifelse works because you need the two difference options for the two different outcomes.
