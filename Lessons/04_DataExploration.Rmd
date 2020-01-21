@@ -46,7 +46,8 @@ At the top of your R scripts, you should load any packages that need to be used 
 
 At the same time, you should also load your theme if you are doing any data visualization with ggplot. More on this later.
 
-```{r, message = FALSE}
+```{r, message = FALSE} 
+# Message = FALSE will not print the message, such as the one for tidyverse package, which will cause errors when you try to knit
 # Load package
 library(tidyverse)
 ```
@@ -75,12 +76,13 @@ USGS.flow.data <- read.csv("./Data/Raw/USGS_Site02085000_Flow_Raw.csv")
 # To import .txt files, use read.table rather than read.csv
 #read.table()
 
+#To copy a pathname from a file on your computer, right click on the file, then press the option key and click copy pathname
 ```
 
 ## EXPLORE YOUR DATASET
 
 Take a moment to read through the README file associated with the USGS dataset on discharge at the Eno River. Where can you find this file? How does the placement and information found in this file relate to the best practices for reproducible data analysis?
-> ANSWER: 
+> ANSWER: This file is located in a metadata folder with a file title that links with the csv data such as "USGS".
 
 ```{r}
 View(USGS.flow.data)
