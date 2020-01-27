@@ -1,6 +1,6 @@
 ---
 title: "Assignment 3: Data Exploration"
-author: "Student Name"
+author: "Nikki Egna"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -23,25 +23,29 @@ The completed exercise is due on Tuesday, January 28 at 1:00 pm.
 
 1. Check your working directory, load necessary packages (tidyverse), and upload two datasets: the ECOTOX neonicotinoid dataset (ECOTOX_Neonicotinoids_Insects_raw.csv) and the Niwot Ridge NEON dataset for litter and woody debris (NEON_NIWO_Litter_massdata_2018-08_raw.csv). Name these datasets "Neonics" and "Litter", respectively. 
 ```{r,  message = FALSE}
+getwd()
+library(tidyverse)
 
+Neonics<-read.csv("../Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv")
+Litter<-read.csv("../Data/Raw/NEON_NIWO_Litter_massdata_2018-08_raw.csv")
 ```
 
 ## Learn about your system
 
 2. The neonicotinoid dataset was collected from the Environmental Protection Agency's ECOTOX Knowledgebase, a database for ecotoxicology research. Neonicotinoids are a class of insecticides used widely in agriculture. The dataset that has been pulled includes all studies published on insects. Why might we be interested in the ecotoxicologoy of neonicotinoids on insects? Feel free to do a brief internet search if you feel you need more background information. 
 
-> Answer: 
+> Answer: Neonicotinoid insecticides are meant to kill insects that are eating agricultural products. It's important to study ecotoxicology on insects to make sure that the insecticides are having their intended consequences and actually killing the insect pests. If they are not killing the intended bugs, their use is unnecessary and should not be utilized. It also is important to study their effect on other insect populations. For example, Neonicotinoids are thought to have negative impacts on bees, which are not an intended target species. In a controlled setting, it's important to determine the appropriate doses of insecticide necessary to accomplish the intended affect. This ensures that insecticides are applied at effective quantities, and not an unnecessary excess is being released to the environment.
 
 3. The Niwot Ridge litter and woody debris dataset was collected from the National Ecological Observatory Network, which collectively includes 81 aquatic and terrestrial sites across 20 ecoclimatic domains. 32 of these sites sample forest litter and woody debris, and we will focus on the Niwot Ridge long-term ecological research (LTER) station in Colorado. Why might we be interested in studying litter and woody debris that falls to the ground in forests? Feel free to do a brief internet search if you feel you need more background information. 
 
-> Answer: 
+> Answer: It is important to study leaf litter and debris because it is a critical part of biogeochemical cycling in a forest. Decaying lead litter returns essential nutrients, such as Nitrogen, Phosphorus, and Potassium, back into the soil. Thus, a large amount of leaf litter can potentially indicate healthy soils.
 
 4. How is litter and woody debris sampled as part of the NEON network? Read the NEON_Litterfall_UserGuide.pdf document to learn more. List three pieces of salient information about the sampling methods here: 
 
 > Answer: 
-*
-*
-*
+*Ground sampling occurs once per year
+*Plots are typically 20x20m or 40x40m
+*One ground trap and one air trap is deployed for every 400m sq plot area
 
 
 
@@ -50,31 +54,36 @@ The completed exercise is due on Tuesday, January 28 at 1:00 pm.
 5. What are the dimensions of the dataset?
 
 ```{r}
-
+dim(Neonics)
+# Printed as number of rows, then number of columns
 ```
 
 6. Using the `summary` function, determine the most common effects that are studied. Why might these effects specifically be of interest?
 ```{r}
+summary(Neonics$Effect)
 
 ```
 
-> Answer: 
+> Answer: The common effects are population, mortality, behavior, feeding behavior, reproduction, and development (in order of frequency). These could be of interest because it looks at the different ways that the insecticide may affect insects. For example, whether or not their population size or mortality rates are changing determines if the insecticidde is working. Further, if the insecticide is targeting feeding behavior change, it is important to collect data on the concentration of insecticide that may deter the insects from feeding on a given plant. 
 
 7. Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.
 
 ```{r}
+head(summary(Neonics$Species.Common.Name))
 
 ```
 
-> Answer: 
+> Answer: The 6 most commonly studied species are all types of bees. This is because bees are not specifically the target of insecticides, but often are affected negatively by their application. Bees are an essential part of the ecosystem, and provide many ecosystem services such as pollination, thus it is critical to understand how insecticides may alter their population.
 
 8. Concentrations are always a numeric value. What is the class of Conc.1..Author. in the dataset, and why is it not numeric?
 
 ```{r}
+str(Neonics$Conc.1..Author.)
+View(Neonics$Conc.1..Author.)
 
 ```
 
-> Answer:
+> Answer: Conc.1..Author. is a factor with 1006 levels. It is not a numeric column because it contains character values within cells with the numbers, for example 1.00/ , <4.00 , NR , or ~10. The presence of characters such as these will prevent R from recognizing this column as numeric.
 
 
 
@@ -82,17 +91,24 @@ The completed exercise is due on Tuesday, January 28 at 1:00 pm.
 
 9. Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year. 
 ```{r}
+pub.year.graph<-ggplot(Neonics) +
+  geom_freqpoly(aes(x = Publication.Year), bins = 50, col="darkblue")
 
+plot(pub.year.graph)
 ```
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
 ```{r}
+pub.year.graph.color<-ggplot(Neonics) +
+  geom_freqpoly(aes(x = Publication.Year, color = Test.Location), bins = 50) +
+  theme(legend.position = "right")+ scale_color_brewer(palette = "Blues")+ theme_dark()
 
+plot(pub.year.graph.color)
 ```
 
 Interpret this graph. What are the most common test locations, and do they differ over time?
 
-> Answer: 
+> Answer: The most common test locations are in the lab and the natural field. There is a great deal of variation over time, shown by the spikes and pitfalls in the graph.
 
 11. Create a bar graph of Endpoint counts. What are the two most common end points, and how are they defined? Consult the ECOTOX_CodeAppendix for more information. 
 
