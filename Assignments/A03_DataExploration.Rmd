@@ -25,6 +25,7 @@ The completed exercise is due on Tuesday, January 28 at 1:00 pm.
 ```{r,  message = FALSE}
 getwd()
 library(tidyverse)
+library(ggplot2)
 
 Neonics<-read.csv("../Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv")
 Litter<-read.csv("../Data/Raw/NEON_NIWO_Litter_massdata_2018-08_raw.csv")
@@ -98,7 +99,7 @@ plot(pub.year.graph)
 ```
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
-```{r, fig.height = 3, fig.width = 4}
+```{r, fig.height = 3, fig.width = 6}
 pub.year.graph.color<-ggplot(Neonics) +
   geom_freqpoly(aes(x = Publication.Year, color = Test.Location), bins = 50) +
   theme(legend.position = "right")+ scale_color_brewer(palette = "Blues")+ theme_dark()
@@ -114,7 +115,7 @@ Interpret this graph. What are the most common test locations, and do they diffe
 
 ```{r}
 ggplot(Neonics, aes(x = Endpoint)) +
-  geom_bar()
+  geom_bar()+theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 table(Neonics$Endpoint)
 ```
