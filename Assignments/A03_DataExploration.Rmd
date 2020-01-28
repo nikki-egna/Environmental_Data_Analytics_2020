@@ -148,13 +148,13 @@ length(summary(Litter$plotID))
 > Answer: Summary tells you how many there are of each unique plotID, whereas unique will show you just the different names. However, wrapping both in the length() function will give you the same answer.
 
 14. Create a bar graph of functionalGroup counts. This shows you what type of litter is collected at the Niwot Ridge sites. Notice that litter types are fairly equally distributed across the Niwot Ridge sites.
-```{r, fig.height = 3, fig.width = 4}
+```{r, fig.height = 3, fig.width = 8}
 ggplot(Litter, aes(x = functionalGroup)) +
   geom_bar()
 ```
 
 15. Using `geom_boxplot` and `geom_violin`, create a boxplot and a violin plot of dryMass by functionalGroup. 
-```{r, fig.height = 3, fig.width = 4}
+```{r, fig.height = 3, fig.width = 8}
 ggplot(Litter) +
   geom_boxplot(aes(x = functionalGroup, y = dryMass, group = cut_width(functionalGroup, 1)))
 
