@@ -66,25 +66,33 @@ summary(EPAair$Ozone)
 EPAair.subsample <- sample_n(EPAair, 5000)
 
 # Evaluate assumption of normal distribution
-shapiro.test((EPAair.subsample$Ozone))
+# Null hypothesis is that the data ARE normal
+shapiro.test((EPAair.subsample$Ozone)) #Can only test 5000 observations
+#Significant p-value here, reject the null- data are NOT normal
 ggplot(EPAair, aes(x = Ozone)) +
   geom_histogram() 
-qqnorm(EPAair$Ozone); qqline(EPAair$Ozone)
+#Right-skewed, bimodel 
 
+qqnorm(EPAair$Ozone); qqline(EPAair$Ozone)
+#Data do not follow the normal qqline
+
+#Is the majority of air quality values less than 50
 O3.onesample <- t.test(EPAair$Ozone, mu = 50, alternative = "less")
 O3.onesample
 
 Ozone.plot <- ggplot(EPAair, aes(x = Ozone)) +
-  #geom_density(stat = "count", fill = "gray") +
+  #geom_density(stat = "count", fill = "gray") + #This counts the number of observations rather than proportions which is seen in the density plot
   geom_density(fill = "gray") +
   geom_vline(xintercept = 50, color = "#238b45", lty = 2, size = 0.9) +
-  scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0))
+  scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 0)) #Axes start at zero
 print(Ozone.plot)
 ```
 
 Write a sentence or two about the results of this test. Include both the results of the test and an interpretation that puts the findings in context of the resarch question.
 
-> 
+> Here we are testing whether or not the average ozone concentration is below 50 in the EPA Air dataset. We used a t-test to determine with statistical significance that the mean average ozone concentration is below 50 (p<0.0002). 
+
+#EPA Ozone measurements for 2018-2019 were significantly lower than 50, the AQI threshold for "good" air quality (t-test; t = -57.98, p < 0.0001)
 
 ### Two-sample t-test
 The two-sample *t* test is used to test the hypothesis that the mean of two samples is equivalent. Unlike the one-sample tests, a two-sample test requires a second assumption that the variance of the two groups is equivalent. Are Ozone levels different between 2018 and 2019?
@@ -92,21 +100,26 @@ The two-sample *t* test is used to test the hypothesis that the mean of two samp
 ```{r}
 shapiro.test(EPAair$Ozone[EPAair$Year == 2018])
 shapiro.test(EPAair$Ozone[EPAair$Year == 2019])
-var.test(EPAair$Ozone ~ EPAair$Year)
+var.test(EPAair$Ozone ~ EPAair$Year) #significant p-value shows that the variances are not equal
 
 ggplot(EPAair, aes(x = Ozone, color = as.factor(Year))) +
   geom_freqpoly()
 
 # Format as a t-test
 O3.twosample <- t.test(EPAair$Ozone ~ EPAair$Year)
-O3.twosample
+O3.twosample #Reject null hypoethesis that the means are equal
 O3.twosample$p.value
 
 # Format as a GLM
 O3.twosample2 <- lm(EPAair$Ozone ~ EPAair$Year)
-summary(O3.twosample2)
+summary(O3.twosample2) #For each increase in year, Ozone will increase by 0.8452
 
+par(mfrow = c(2,2))
 plot(O3.twosample2)
+#Residuals vs fitted
+#Normal QQ- shows the fit of the model, model residuals not normally distributed
+#Scale-Location- you want the line to be flat
+#Residuals vs Leverage- you want the points to be within cooks distance
 ```
 
 ### Non-parametric equivalent of t-test: Wilcoxon test
@@ -118,6 +131,7 @@ O3.onesample.wilcox <- wilcox.test(EPAair$Ozone, mu = 50, alternative = "less")
 O3.onesample.wilcox
 O3.twosample.wilcox <- wilcox.test(EPAair$Ozone ~ EPAair$Year)
 O3.twosample.wilcox
+#Only if assumptions are violated for a t-test and you're not comfortable running the t-test
 ```
 
 ### Visualization and interpretation challenge
@@ -129,8 +143,18 @@ Create three plots, each with appropriately formatted axes and legends. Choose a
 3. geom_violin of ozone divided by year, with the 0.5 quantile marked as a horizontal line. Add letters representing a significant difference between 2018 and 2019. 
 
 ```{r}
+EPAair$Year<-as.factor(EPAair$Year)
 
+OzoneDensPlot <- ggplot(EPAair, aes(x=Ozone, fill=Year)) + 
+  geom_density(alpha=.5)+
+  scale_fill_manual(values=c("red","blue"))+
+  labs(y="Density")
+print(OzoneDensPlot)
 
+OzoneBoxPlot<- ggplot(EPAair, aes(x=Year, y=Ozone))+
+  geom_boxplot(color="blue")
+?stat_summary
+print(OzoneBoxPlot)
 ```
 
 Now, write a summary of your findings, incorporating statistical output, reference to the figure(s), and a contextual interpretation.
