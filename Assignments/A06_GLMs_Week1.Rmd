@@ -122,17 +122,21 @@ print(TN.plot)
 
 TP.plot <- ggplot(NTL_LTER_Lake_Nutrients_1993_96, aes(x = month, y = tp_ug, color = lakename)) +
   geom_boxplot() +
-  stat_summary(geom = "text", fun.y = max, vjust = -1, hjust = -1, size = 3.5,
+  stat_summary(position = "dodge", geom = "text", fun.y = max, vjust = -1,
+            hjust = -1, size = 3.5,
            label = c("cd","bcd","d","ab","d","a","d","abc","cd","abcd" ),
            show.legend = FALSE) +
   labs(x = "Month", y = "Total Phosphorus") +
-  scale_color_manual(values= c("lightblue", "darkblue"))+
+  scale_color_manual(name = "Lake Name",values= c("lightblue", "darkblue"))+
   ylim(0, 70)
 print(TP.plot)
 
 #8
 
+TN_TP.Plot <- plot_grid(TN.plot + theme(legend.position = "none"), TP.plot +
+                          theme(legend.position = "bottom"), nrow = 2, align = 'h')
 
+print(TN_TP.Plot)
 ```
 
 
