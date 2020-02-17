@@ -1,6 +1,6 @@
 ---
 title: "Assignment 6: GLMs week 1 (t-test and ANOVA)"
-author: "Student Name"
+author: "Nikki Egna"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -29,10 +29,19 @@ The completed exercise is due on Tuesday, February 18 at 1:00 pm.
 
 ```{r, message = FALSE}
 #1
+getwd()
 
+library(tidyverse)
+library(cowplot)
+library(agricolae)
+
+NTL_LTER_Lake_Nutrients<-read.csv("./Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv")
 
 #2
 
+NTL_LTER_Lake_Nutrients$sampledate <- as.Date(NTL_LTER_Lake_Nutrients$sampledate, format= "%Y-%m-%d")
+
+head(NTL_LTER_Lake_Nutrients$sampledate)
 ```
 
 
@@ -41,6 +50,11 @@ The completed exercise is due on Tuesday, February 18 at 1:00 pm.
 3. Wrangle your dataset so that it contains only surface depths and only the years 1993-1996, inclusive. Set month as a factor.
 ```{r}
 
+NTL_LTER_Lake_Nutrients_1993_96 <- NTL_LTER_Lake_Nutrients %>%
+  filter(depth == 0) %>%
+  filter(year4 == 1993 | year4 == 1994 | year4 == 1995 | year4 == 1996)
+
+NTL_LTER_Lake_Nutrients_1993_96$month <- as.factor(NTL_LTER_Lake_Nutrients_1993_96$month)
 
 ```
 
@@ -50,7 +64,7 @@ Peter Lake was manipulated with additions of nitrogen and phosphorus over the ye
 
 4. Which application of the GLM will you use (t-test, one-way ANOVA, two-way ANOVA with main effects, or two-way ANOVA with interaction effects)? Justify your choice.
 
-> Answer: 
+> Answer:  I will use a two way ANOVA because we will be modeling the effects of two variables: lake name and month on nutrient levels. After running the model with interaction effects, we see that the interaction is not significant, thus we use the two-way ANOVA with main effects.
 
 5. Run your test for TN. Include examination of groupings and consider interaction effects, if relevant.
 
@@ -59,8 +73,31 @@ Peter Lake was manipulated with additions of nitrogen and phosphorus over the ye
 ```{r}
 #5
 
+TN_model <- aov(data = NTL_LTER_Lake_Nutrients_1993_96, tn_ug ~ lakename * month) 
+summary(TN_model)
+#Interaction not significant
+
+TN_model <- aov(data = NTL_LTER_Lake_Nutrients_1993_96, tn_ug ~ lakename + month) 
+summary(TN_model)
+
+TN_model <- aov(data = NTL_LTER_Lake_Nutrients_1993_96, tn_ug ~ lakename + month) 
+summary(TN_model)
+
+TN_model_groups <- HSD.test(TN_model, c("lakename","month"), group = TRUE)
+TN_model_groups
+
 
 #6
+
+TP_model <- aov(data = NTL_LTER_Lake_Nutrients_1993_96, tp_ug ~ lakename * month) 
+summary(TP_model)
+#Interaction is significant
+
+TP.interaction <- with(NTL_LTER_Lake_Nutrients_1993_96, interaction(lakename, month))
+TP_model <- aov(data = NTL_LTER_Lake_Nutrients_1993_96, tp_ug ~ TP.interaction)
+
+TP.groups <- HSD.test(TP_model, "TP.interaction", group = TRUE)
+TP.groups
 
 
 ```
@@ -71,9 +108,30 @@ Peter Lake was manipulated with additions of nitrogen and phosphorus over the ye
 
 ```{r}
 #7
+TN.plot <- ggplot(NTL_LTER_Lake_Nutrients_1993_96, aes(x = month, y = tn_ug, color = lakename)) +
+  geom_boxplot() +
+  stat_summary(geom = "text", fun.y = max, vjust = -1, size = 3.5,
+               label = c("b", "ab", "b", "ab", "b", "a", 
+                        "b", "a", "ab", "ab"), 
+               show.legend = FALSE) +
+  labs(x = "Month", y = "Total Nitrogen") +
+  scale_color_manual(values= c("lightblue", "darkblue"))+
+  ylim(0, 2500)
 
+print(TN.plot)
+
+TP.plot <- ggplot(NTL_LTER_Lake_Nutrients_1993_96, aes(x = month, y = tp_ug, color = lakename)) +
+  geom_boxplot() +
+  stat_summary(geom = "text", fun.y = max, vjust = -1, hjust = -1, size = 3.5,
+           label = c("cd","bcd","d","ab","d","a","d","abc","cd","abcd" ),
+           show.legend = FALSE) +
+  labs(x = "Month", y = "Total Phosphorus") +
+  scale_color_manual(values= c("lightblue", "darkblue"))+
+  ylim(0, 70)
+print(TP.plot)
 
 #8
+
 
 ```
 
