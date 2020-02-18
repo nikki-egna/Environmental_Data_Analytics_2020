@@ -35,11 +35,12 @@ library(tidyverse)
 library(cowplot)
 library(agricolae)
 
-NTL_LTER_Lake_Nutrients<-read.csv("./Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv")
+NTL_LTER_Lake_Nutrients<-read.csv("../Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv")
 
 #2
 
-NTL_LTER_Lake_Nutrients$sampledate <- as.Date(NTL_LTER_Lake_Nutrients$sampledate, format= "%Y-%m-%d")
+NTL_LTER_Lake_Nutrients$sampledate <- 
+  as.Date(NTL_LTER_Lake_Nutrients$sampledate, format= "%Y-%m-%d")
 
 head(NTL_LTER_Lake_Nutrients$sampledate)
 ```
@@ -54,7 +55,8 @@ NTL_LTER_Lake_Nutrients_1993_96 <- NTL_LTER_Lake_Nutrients %>%
   filter(depth == 0) %>%
   filter(year4 == 1993 | year4 == 1994 | year4 == 1995 | year4 == 1996)
 
-NTL_LTER_Lake_Nutrients_1993_96$month <- as.factor(NTL_LTER_Lake_Nutrients_1993_96$month)
+NTL_LTER_Lake_Nutrients_1993_96$month <-
+  as.factor(NTL_LTER_Lake_Nutrients_1993_96$month)
 
 ```
 
@@ -64,7 +66,7 @@ Peter Lake was manipulated with additions of nitrogen and phosphorus over the ye
 
 4. Which application of the GLM will you use (t-test, one-way ANOVA, two-way ANOVA with main effects, or two-way ANOVA with interaction effects)? Justify your choice.
 
-> Answer:  I will use a two way ANOVA because we will be modeling the effects of two variables: lake name and month on nutrient levels. After running the model with interaction effects, we see that the interaction is not significant, thus we use the two-way ANOVA with main effects.
+> Answer:  I will use a two way ANOVA because we will be modeling the effects of two variables: lake name and month on nutrient levels. After running the model with interaction effects, we see that the interaction is not significant for the total nitrogren model, thus we use the two-way ANOVA with main effects. For the total phosphorus model, the interaction is significant, thus we use a two way anova with main effects and interaction effects.
 
 5. Run your test for TN. Include examination of groupings and consider interaction effects, if relevant.
 
@@ -73,14 +75,17 @@ Peter Lake was manipulated with additions of nitrogen and phosphorus over the ye
 ```{r}
 #5
 
-TN_model <- aov(data = NTL_LTER_Lake_Nutrients_1993_96, tn_ug ~ lakename * month) 
+TN_model <- aov(data = NTL_LTER_Lake_Nutrients_1993_96, tn_ug ~ 
+                  lakename * month) 
 summary(TN_model)
 #Interaction not significant
 
-TN_model <- aov(data = NTL_LTER_Lake_Nutrients_1993_96, tn_ug ~ lakename + month) 
+TN_model <- aov(data = NTL_LTER_Lake_Nutrients_1993_96, tn_ug ~ 
+                  lakename + month) 
 summary(TN_model)
 
-TN_model <- aov(data = NTL_LTER_Lake_Nutrients_1993_96, tn_ug ~ lakename + month) 
+TN_model <- aov(data = NTL_LTER_Lake_Nutrients_1993_96, tn_ug ~ 
+                  lakename + month) 
 summary(TN_model)
 
 TN_model_groups <- HSD.test(TN_model, c("lakename","month"), group = TRUE)
@@ -89,12 +94,15 @@ TN_model_groups
 
 #6
 
-TP_model <- aov(data = NTL_LTER_Lake_Nutrients_1993_96, tp_ug ~ lakename * month) 
+TP_model <- aov(data = NTL_LTER_Lake_Nutrients_1993_96, tp_ug ~ 
+                  lakename * month) 
 summary(TP_model)
 #Interaction is significant
 
-TP.interaction <- with(NTL_LTER_Lake_Nutrients_1993_96, interaction(lakename, month))
-TP_model <- aov(data = NTL_LTER_Lake_Nutrients_1993_96, tp_ug ~ TP.interaction)
+TP.interaction <- with(NTL_LTER_Lake_Nutrients_1993_96, 
+                       interaction(lakename, month))
+TP_model <- aov(data = NTL_LTER_Lake_Nutrients_1993_96, 
+                tp_ug ~ TP.interaction)
 
 TP.groups <- HSD.test(TP_model, "TP.interaction", group = TRUE)
 TP.groups
@@ -106,35 +114,41 @@ TP.groups
 
 8. Combine your plots with cowplot, with a common legend at the top and the two graphs stacked vertically. Your x axes should be formatted with the same breaks, such that you can remove the title and text of the top legend and retain just the bottom legend. 
 
-```{r}
+```{r, height = 9, width = 7}
 #7
 TN.plot <- ggplot(NTL_LTER_Lake_Nutrients_1993_96, aes(x = month, y = tn_ug, color = lakename)) +
   geom_boxplot() +
-  stat_summary(geom = "text", fun.y = max, vjust = -1, size = 3.5,
+  stat_summary(position = position_dodge(width = 0.75), geom = "text", 
+               fun.y = max, vjust = -1, size = 3.5,
                label = c("b", "ab", "b", "ab", "b", "a", 
                         "b", "a", "ab", "ab"), 
                show.legend = FALSE) +
   labs(x = "Month", y = "Total Nitrogen") +
-  scale_color_manual(values= c("lightblue", "darkblue"))+
+  scale_color_manual(values= c("blue", "navy"))+
   ylim(0, 2500)
 
 print(TN.plot)
 
 TP.plot <- ggplot(NTL_LTER_Lake_Nutrients_1993_96, aes(x = month, y = tp_ug, color = lakename)) +
   geom_boxplot() +
-  stat_summary(position = "dodge", geom = "text", fun.y = max, vjust = -1,
-            hjust = -1, size = 3.5,
+  stat_summary(position = position_dodge(width = 0.75), geom = "text", 
+            fun.y = max, vjust = -1,
+            size = 3.5,
            label = c("cd","bcd","d","ab","d","a","d","abc","cd","abcd" ),
            show.legend = FALSE) +
   labs(x = "Month", y = "Total Phosphorus") +
-  scale_color_manual(name = "Lake Name",values= c("lightblue", "darkblue"))+
+  scale_color_manual(name = "Lake Name",values= c("blue", "navy"))+
   ylim(0, 70)
 print(TP.plot)
 
 #8
 
-TN_TP.Plot <- plot_grid(TN.plot + theme(legend.position = "none"), TP.plot +
-                          theme(legend.position = "bottom"), nrow = 2, align = 'h')
+TN_TP.Plot <- plot_grid(TN.plot + theme(legend.position = "none") + 
+                          labs(x= ""), TP.plot + 
+                          theme(legend.position = "bottom"), 
+                        nrow = 2, 
+                        align = "v", axis = "b",
+                        rel_heights = c(1.25, 1))
 
 print(TN_TP.Plot)
 ```
