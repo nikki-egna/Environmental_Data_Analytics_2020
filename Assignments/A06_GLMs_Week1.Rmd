@@ -35,7 +35,7 @@ library(tidyverse)
 library(cowplot)
 library(agricolae)
 
-NTL_LTER_Lake_Nutrients<-read.csv("../Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv")
+NTL_LTER_Lake_Nutrients<-read.csv("./Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv")
 
 #2
 
