@@ -199,11 +199,11 @@ In general, detecting a monotonic trend requires a long sequence of data with fe
 
 Adjusting the data may be necessary to fulfill the assumptions of a trend test. These adjustments include **aggregation**, **subsampling**, and **interpolation**. What do each of these mean, and why might we want to use them?
 
-> aggregation: 
+> aggregation: Taking multiple data points and creating one data point from them. For example, if you have daily data, you can get mean or sum for months or years.
 
-> subsampling: 
+> subsampling: Subsetting the data to include a certain portion or a random sample of your data points.
 
-> interpolation: 
+> interpolation: Predicting values based on existing data. Can fill in data gaps.
 
 Common interpolation methods: 
 
@@ -222,6 +222,7 @@ ggplot(NCAir, aes(x = Date, y = Ozone)) +
   geom_point() +
   facet_wrap(vars(Site.Name))
 print(NCOzone)
+#Interpolation not a great option here
 
 NCPM2.5 <-
 ggplot(NCAir, aes(x = Date, y = PM2.5)) +
@@ -245,6 +246,7 @@ print(GaringerOzone)
 NCAir.Garinger$Ozone <- na.approx(NCAir.Garinger$Ozone)
 NCAir.Garinger$PM2.5 <- na.approx(NCAir.Garinger$PM2.5)
 
+#Some points are added/ filled in using linear interpolation
 GaringerOzone.interpolated <-
 ggplot(NCAir.Garinger, aes(x = Date, y = Ozone)) +
   geom_point() 
@@ -278,13 +280,18 @@ EnoDischarge.late.monthly <- EnoDischarge.late %>%
          Month = month(datetime)) %>%
   group_by(Year, Month) %>%
   summarise(Discharge = mean(discharge.mean)) 
-  
+
+#Create a date column by combining the month, year, and day columns and separate it by a '-'
+#Assumes its the first of the month since there are no values for day
+#Date column with day month and year needed for timeseries
 EnoDischarge.late.monthly$Date <- as.Date(paste(EnoDischarge.late.monthly$Year, 
                                                 EnoDischarge.late.monthly$Month, 
                                                 1, sep="-"), 
                                           format = "%Y-%m-%d")
 
 # Generate time series (smk.test needs ts, not data.frame)
+# Frequency = number of months in year
+# Start = start date, End = end date
 EnoDischarge.late.monthly.ts <- ts(EnoDischarge.late.monthly$Discharge, frequency = 12, 
                         start = c(1985, 10, 1), end = c(2019, 12, 1))
 # Run SMK test
@@ -292,6 +299,7 @@ EnoDischarge.late.trend <- smk.test(EnoDischarge.late.monthly.ts)
 
 # Inspect results
 EnoDischarge.late.trend
+#No significant trend over time, accept null hypothesis with high p value
 summary(EnoDischarge.late.trend)
 
 EnoDischarge.monthly <-
@@ -303,7 +311,7 @@ print(EnoDischarge.monthly)
 
 What would we conclude based on these findings? 
 
->
+> There is no significant difference between the trends in monthly discharge data over the past X years (z= -1.06, p = 0.29) 
  
 If a significant trend was present, we could compute a **Sen's Slope** to quantify that trend (`sens.slope` function in the trend package).
 
