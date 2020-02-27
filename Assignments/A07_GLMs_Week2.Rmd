@@ -25,7 +25,7 @@ The completed exercise is due on Tuesday, February 25 at 1:00 pm.
 
 2. Build a ggplot theme and set it as your default theme.
 
-```{r}
+```{r, message=F}
 #1
 getwd()
 library(tidyverse)
@@ -34,9 +34,9 @@ library(piecewiseSEM)
 library(RColorBrewer)
 
 NTL_LTER_Raw <- 
-  read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
+  read.csv("../Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
 Litter_Processed <- 
-  read.csv("./Data/Processed/NEON_NIWO_Litter_mass_trap_Processed.csv")
+  read.csv("../Data/Processed/NEON_NIWO_Litter_mass_trap_Processed.csv")
 
 #2
 mytheme <- theme_classic(base_size = 14) +
@@ -115,7 +115,6 @@ DryMass.mixed <- lme(data = Litter_Processed,
                      dryMass ~ nlcdClass * functionalGroup, 
                      random = ~1|plotID)
 
-summary(DryMass.mixed)
 rsquared(DryMass.mixed)
 
 
@@ -128,10 +127,13 @@ b. continued... How much more variance is explained by adding the random effect 
 c. Run the same model without the random effect.
 d. Run an anova on the two tests. 
 ```{r}
- 
+DryMass.fixed <- lm(data = Litter_Processed,
+                     dryMass ~ nlcdClass * functionalGroup)
+rsquared(DryMass.fixed)
 
+anova(DryMass.mixed, DryMass.fixed)
 ```
 
 d. continued... Is the mixed effects model a better model than the fixed effects model? How do you know?
 
-> Answer: 
+> Answer: The mixed affect model is better because the mixed and fixed affect are significantly different from one another, as shown by the small p value (<0.0001) in the anova, and because the Rsquared value is higher for the mixed effect (.27) compared to the fixed effect (.25). The mixed effect model also has a lower AIC value.
