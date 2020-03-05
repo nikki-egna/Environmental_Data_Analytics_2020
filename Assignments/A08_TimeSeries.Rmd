@@ -1,9 +1,11 @@
 ---
-title: "Assignment 8: Time Series Analysis"
-author: "Student Name"
-output: pdf_document
+title: 'Assignment 8: Time Series Analysis'
+author: "Nikki Egna"
 geometry: margin=2.54cm
-editor_options: 
+output:
+  pdf_document: default
+  word_document: default
+editor_options:
   chunk_output_type: console
 ---
 
@@ -123,7 +125,7 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 
 ```{r}
 # 8
-GaringerOzone$Daily.Max.8.hour.Ozone.Concentration <- na.approx(GaringerOzone$Daily.Max.8.hour.Ozone.Concentration)
+GaringerOzone$DAILY_AQI_VALUE <- na.approx(GaringerOzone$DAILY_AQI_VALUE)
 
 
 # 9
@@ -131,7 +133,7 @@ GaringerOzone.monthly <- GaringerOzone %>%
   mutate(Year = year(Date), 
          Month = month(Date)) %>%
   group_by(Year, Month) %>%
-  summarise(Ozone = mean(Daily.Max.8.hour.Ozone.Concentration)) 
+  summarise(Ozone = mean(DAILY_AQI_VALUE)) 
 
 GaringerOzone.monthly$Date <- as.Date(paste(GaringerOzone.monthly$Year, 
                                                 GaringerOzone.monthly$Month, 
@@ -141,7 +143,7 @@ GaringerOzone.monthly$Date <- as.Date(paste(GaringerOzone.monthly$Year,
 # 10
 
 GaringerOzone.monthly.ts <- ts(GaringerOzone.monthly$Ozone, frequency = 12, 
-                        start = c(2010, 01, 1), end = c(2019, 07, 1))
+                        start = c(2010, 01, 1), end = c(2019, 12, 1))
 
 # 11
 GaringerOzone.monthly.trend <- smk.test(GaringerOzone.monthly.ts)
@@ -159,7 +161,7 @@ GaringerOzone.monthly.graph <-
 ggplot(GaringerOzone.monthly, aes(x = Date, y = Ozone)) +
   geom_point(color="blue") +
   geom_line(color="blue") +
-  labs(y= "Ozone (ppm)") 
+  labs(y= "Mean Ozone Concentration (ppm)") 
 print(GaringerOzone.monthly.graph)
 
 
@@ -168,4 +170,4 @@ print(GaringerOzone.monthly.graph)
 
 14. To accompany your graph, summarize your results in context of the research question. Include output from the statistical test in parentheses at the end of your sentence. Feel free to use multiple sentences in your interpretation.
 
-> Answer: This analysis shows that there has been a significant change in ozone concentration from 2010-2020 (p = 0.006, z = -2.7), however there are no significant differences between individuals months (p > 0.05 for all months).
+> Answer: This analysis shows that there has been a significant change in mean ozone concentration from 2010-2020 (p = 0.001, z = -3.23), however there are no significant differences between individuals months (p > 0.05 for all months).
