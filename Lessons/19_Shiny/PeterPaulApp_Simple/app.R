@@ -3,7 +3,7 @@ library(shiny)
 library(tidyverse)
 
 #### Load data ----
-nutrient_data <- read_csv("Data/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv")
+nutrient_data <- read_csv("./Lessons/19_Shiny/PeterPaulApp_Simple/Data/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv")
 nutrient_data$sampledate <- as.Date(nutrient_data$sampledate, format = "%Y-%m-%d")
 nutrient_data <- nutrient_data %>%
   filter(depth_id > 0) %>%
@@ -34,7 +34,7 @@ server <- function(input, output) {
     # Create a ggplot object for the type of plot you have defined in the UI  
        output$scatterplot <- renderPlot({
         ggplot(nutrient_data, 
-               aes_string(x = "sampledate", y = input$y, 
+               aes_string(x = "sampledate", y = input$y, #Anything static is just the variable, anything that you want as the changing variable you must point to the input
                           fill = "depth_id", shape = "lakename")) +
           geom_point(alpha = 0.8, size = 2) +
           theme_classic(base_size = 14) +
